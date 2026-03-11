@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PolyFactory — Prediction Markets on BSC</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
+  <link rel="stylesheet" href="style.css?v=1773238794">
+  <script>
+    // Apply theme before render to avoid flash
+    (function() {
+      var p = new URLSearchParams(location.search).get('theme');
+      var t = p || localStorage.getItem('pf-theme') || 'dark';
+      if (t === 'light') document.documentElement.classList.add('light-pending');
+    })();
+  </script>
+  <style>
+    /* Prevent flash: apply light immediately if needed */
+    html.light-pending body { background: #f6f8fa; color: #1a1f2e; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Poly<span>Factory</span></h1>
+    <div class="header-right">
+      <button id="themeToggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+      <span id="usdtBalance" class="usdt-balance" style="display:none;"></span>
+      <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Main content: tabs + panels -->
+    <div id="mainContent">
+      <div class="tabs">
+        <button class="tab active" data-panel="marketsPanel">Markets</button>
+        <button class="tab" data-panel="positionsPanel">My Positions</button>
+        <button class="tab" data-panel="adminPanel" id="adminTab" style="display:none;">Admin</button>
+      </div>
+
+      <!-- Markets -->
+      <div id="marketsPanel" class="panel active">
+        <div id="marketsList">
+          <div class="empty-state">Loading markets...</div>
+        </div>
+      </div>
+
+      <!-- My Positions -->
+      <div id="positionsPanel" class="panel">
+        <div id="myPositions">
+          <div class="empty-state">Connect wallet to see positions</div>
+        </div>
+      </div>
+
+      <!-- Admin Panel -->
+      <div id="adminPanel" class="panel">
+        <div class="card admin-section">
+          <h3>Create Market</h3>
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="newTitle" placeholder="Will BTC reach $150k by July 2026?">
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input type="datetime-local" id="newEndTime">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" value="Binary (YES / NO)" disabled>
+          </div>
+          <button class="btn btn-primary" onclick="createMarket()">Create Market</button>
+        </div>
+
+        <div class="card admin-section">
+          <h3>Resolve Market</h3>
+          <div class="form-group">
+            <label>Market ID</label>
+            <input type="number" id="resolveId" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label>Winning Outcome</label>
+            <select id="resolveOutcome">
+              <option value="1">1 — YES</option>
+              <option value="2">2 — NO</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="resolveMarket()">Resolve</button>
+        </div>
+
+        <div class="card admin-section">
+          <h3>Cancel Market</h3>
+          <div class="form-group">
+            <label>Market ID</label>
+            <input type="number" id="cancelId" placeholder="0" min="0">
+          </div>
+          <button class="btn btn-danger" onclick="cancelMarket()">Cancel Market</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market Detail (shown when navigating to #/market/:id) -->
+    <div id="marketDetail" style="display:none;"></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="ethers.umd.min.js"></script>
+  <script src="chart.umd.min.js"></script>
+  <script src="config.js?v=1773238794"></script>
+  <script src="snapshot-storage.js?v=1773238794"></script>
+  <script src="app.js?v=1773238794"></script>
+  <!-- MCW Apps Bridge — runs sync before AppKit to detect bridge mode -->
+  <script src="wallet-bridge-init.js?v=1773238794"></script>
+  <!-- WalletConnect / Reown AppKit — module, skipped in bridge mode -->
+  <script type="module" src="wallet-init.js?v=1773238794"></script>
+</body>
+</html>
